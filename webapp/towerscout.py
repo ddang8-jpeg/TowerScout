@@ -383,7 +383,7 @@ def get_objects():
     # make a new tempdir name and attach to session
     tmpdir = tempfile.TemporaryDirectory()
     tmpdirname = tmpdir.name
-    tmpfilename = tmpdirname[tmpdirname.rindex("/")+1:]
+    tmpfilename = tmpdirname[tmpdirname.rindex("\\")+1:]
     print("creating tmp dir", tmpdirname)
     session['tmpdirname'] = tmpdirname
     tmpdir.cleanup()  # yeah this is asinine but I need the tmpdir to survive to I will create it manually next
