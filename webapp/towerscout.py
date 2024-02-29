@@ -53,7 +53,6 @@ engine_lock = threading.Lock()
 
 exit_events = ExitEvents()
 
-
 # on-demand instantiate YOLOv5 model
 def get_engine(e):
     if e is None:
