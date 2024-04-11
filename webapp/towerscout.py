@@ -265,7 +265,7 @@ def get_providers():
     print("map providers requested")
     result = json.dumps([{'id': k, 'name': v['name']}
                          for (k, v) in providers.items()])
-    print(result)
+    # print(result)
     return result
 
 # zipcode boundary lookup
@@ -303,7 +303,7 @@ def get_objects():
     if 'tiles' not in session:
         session['tiles'] = 0
 
-    print("tiles queried in session:", session['tiles'])
+    # print("tiles queried in session:", session['tiles'])
     if session['tiles'] > MAX_TILES_SESSION:
         return "-1"
 
@@ -313,12 +313,13 @@ def get_objects():
     engine = request.form.get("engine")
     provider = request.form.get("provider")
     polygons = request.form.get("polygons")
+    
     print("incoming detection request:")
     print(" bounds:", bounds)
     print(" engine:", engine)
     print(" map provider:", provider)
     print(" polygons:", polygons)
-
+    
     # cropping
     crop_tiles = True
 
@@ -440,7 +441,7 @@ def get_objects():
             object['id_in_tile'] = i
             object['selected'] = object['secondary'] >= 0.35
 
-            # print(" output:",str(object))
+            print(" output:",str(object))
         results += result
 
     # mark results out of bounds or polygon
@@ -453,6 +454,7 @@ def get_objects():
     results.sort(key=lambda x: x['y1']*2*180+2*x['x1']+x['conf'])
 
     # coaslesce neighboring (in list) towers that are closer than 1 m for x1, y1
+    '''
     if len(results) > 1:
         i = 0
         while i < len(results)-1:
@@ -462,6 +464,7 @@ def get_objects():
                 results.remove(results[i+1])
             else:
                 i += 1
+    '''
 
     # prepend a pseudo-result for each tile, for debugging
     tile_results = []
@@ -495,8 +498,6 @@ def allowed_extension(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg'}
 
 # detection route for provided images
-
-
 @ app.route('/getobjectscustom', methods=['POST'])
 def get_objects_custom():
     start = time.time()

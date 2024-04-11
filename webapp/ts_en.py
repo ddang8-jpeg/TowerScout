@@ -60,7 +60,9 @@ class EN_Classifier:
     # take batch of one img and multiple detections
     # returns filtered detections (class 0 only)
     #
-    def classify(self, img, detections, min_conf=0.25, max_conf=0.65, batch_id=0):
+    # IMPORTANT: Confidence range for running EN.
+    def classify(self, img, detections, min_conf=0.01, max_conf=0.65, batch_id=0):
+        print("min_conf ", min_conf, "max_conf: ", max_conf)
         count=0
         for det in detections:
             x1,y1,x2,y2,conf = det[0:5]
@@ -81,8 +83,8 @@ class EN_Classifier:
                 output = 1 - torch.sigmoid(self.model(input).cpu()).item()
                 print(" inspected: YOLOv5 conf:",round(conf,2), end=", ")
                 print(" secondary result:", round(output,2))
-                #img.save("uploads/img_for_id_"+f"{batch_id+count:02}_conf_"+str(round(conf,2))+"_p2_"+str(round(output,2))+".jpg")
-                #det_img.save("uploads/id_"+f"{batch_id+count:02}_conf_"+str(round(conf,2))+"_p2_"+str(round(output,2))+".jpg")
+                img.save("uploads/img_for_id_"+f"{batch_id+count:02}_conf_"+str(round(conf,2))+"_p2_"+str(round(output,2))+".jpg")
+                det_img.save("uploads/id_"+f"{batch_id+count:02}_conf_"+str(round(conf,2))+"_p2_"+str(round(output,2))+".jpg")
                 p2 = output
 
             elif conf < min_conf:

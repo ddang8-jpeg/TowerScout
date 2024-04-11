@@ -23,7 +23,7 @@ class YOLOv5_Detector:
         # Model
         #model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
         self.model = torch.hub.load(
-            'ultralytics/yolov5', 'custom', path=filename, force_reload=True)
+            'ultralytics/yolov5', 'custom', path=filename)
         if torch.cuda.is_available():
             self.model.cuda()
             t = torch.cuda.get_device_properties(0).total_memory
@@ -31,7 +31,7 @@ class YOLOv5_Detector:
             a = torch.cuda.memory_allocated(0)
             f = r-a  # free inside reserved
             print("free cuda mem:", f)
-            self.batch_size = 16  # For our Tesla K8, this means 8 batches can run in parallel
+            self.batch_size = 8  # For our Tesla K8, this means 8 batches can run in parallel
         else:
             self.batch_size = torch.get_num_threads()  # tuned to threads
         # add a semaphore so we don't run out of GPU memory between multiple clients
@@ -47,7 +47,7 @@ class YOLOv5_Detector:
         for i in range(0, len(tiles), self.batch_size):
             # make a batch of image urls
             tile_batch = tiles[i:i+self.batch_size]
-            print("tile batch: ",tile_batch)
+            # print("tile batch: ",tile_batch)
             img_batch = [Image.open(tile['filename']) for tile in tile_batch]
 
             # crop the tiles if requested
