@@ -40,7 +40,7 @@ from functools import reduce
 
 dev = 0
 
-MAX_TILES = 1000
+MAX_TILES = 100000
 MAX_TILES_SESSION = 100000
 
 torch.set_num_threads(1)
@@ -285,7 +285,6 @@ def get_zipcode():
 
 # abort route
 
-
 @app.route('/abort', methods=['get'])
 def abort():
     print(" aborting", id(session))
@@ -293,7 +292,6 @@ def abort():
     return "ok"
 
 # detection route
-
 
 @app.route('/getobjects', methods=['POST'])
 def get_objects():
@@ -346,7 +344,7 @@ def get_objects():
 
     # divide the map into 640x640 parts
     tiles, nx, ny, meters, h, w = map.make_tiles(bounds, crop_tiles=crop_tiles)
-    print(f" {len(tiles)} tiles, {nx} x {ny}, {meters} x {meters} m")
+    # print(f" {len(tiles)} tiles, {nx} x {ny}, {meters} x {meters} m")
     # print(" Tile centers:")
     # for c in tiles:
     #   print("  ",c)
@@ -441,7 +439,7 @@ def get_objects():
             object['id_in_tile'] = i
             object['selected'] = object['secondary'] >= 0.35
 
-            print(" output:",str(object))
+            # print(" output:",str(object))
         results += result
 
     # mark results out of bounds or polygon
@@ -454,7 +452,7 @@ def get_objects():
     results.sort(key=lambda x: x['y1']*2*180+2*x['x1']+x['conf'])
 
     # coaslesce neighboring (in list) towers that are closer than 1 m for x1, y1
-    '''
+    
     if len(results) > 1:
         i = 0
         while i < len(results)-1:
@@ -464,7 +462,7 @@ def get_objects():
                 results.remove(results[i+1])
             else:
                 i += 1
-    '''
+    
 
     # prepend a pseudo-result for each tile, for debugging
     tile_results = []

@@ -119,31 +119,40 @@ class Map:
 
 async def gather_urls(urls, dir, fname, metadata):
     # execute
-    semaphore = asyncio.Semaphore(1)
+    semaphore = asyncio.Semaphore(8)
     
     async with aiohttp.ClientSession() as session:
+        print("Running with Semaphore limiter")
         await fetch_all(semaphore, session, urls, dir, fname, metadata)
 
 
 async def fetch(semaphore, session, url, dir, fname, i):
-
     meta = False
     if url.endswith(" (meta)"):
         url = url[0:-7]
         meta = True
  
-    async with semaphore:
-        async with session.get(url) as response:
-            if response.status != 200:
-                response.raise_for_status()
+    try:
+        async with semaphore:
+            async with session.get(url) as response:
+                if response.status != 200:
+                    response.raise_for_status()
 
-            # write the file
-            filename = dir+"/"+fname+str(i)+(".meta.txt" if meta else ".jpg")
-            # print(" retrieving ",filename,"...")
-            async with aiofiles.open(filename, mode='wb') as f:
-                await f.write(await response.read())
-                await f.close()
-
+                # write the file
+                filename = dir+"/"+fname+str(i)+(".meta.txt" if meta else ".jpg")
+                # print(" retrieving ",filename,"...")
+                async with aiofiles.open(filename, mode='wb') as f:
+                    await f.write(await response.read())
+                    
+    except aiohttp.ClientError as e:
+        print(f"Error fetching {url}: {e}")
+        # Retrying fetch after too many request response
+        if e.status == 429:
+            print(f"Received 429 error, retrying after delay...")
+            await asyncio.sleep(1) 
+            # Retry the request
+            await fetch(semaphore, session, url, dir, fname, i)
+            
 
 async def fetch_all(semaphore, session, urls, dir, fname, metadata):
     tasks = []
