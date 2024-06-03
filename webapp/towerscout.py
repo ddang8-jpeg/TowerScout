@@ -43,9 +43,6 @@ dev = 0
 MAX_TILES = 100000
 MAX_TILES_SESSION = 100000
 
-torch.set_num_threads(1)
-print("Pytorch threads:", torch.get_num_threads())
-
 engines = {}
 
 engine_default = None
@@ -316,7 +313,7 @@ def get_objects():
     print(" bounds:", bounds)
     print(" engine:", engine)
     print(" map provider:", provider)
-    print(" polygons:", polygons)
+    # print(" polygons:", polygons)
     
     # cropping
     crop_tiles = True
@@ -325,7 +322,7 @@ def get_objects():
     polygons = json.loads(polygons)
     # print(" parsed polygons:", polygons)
     polygons = [ts_imgutil.make_boundary(p) for p in polygons]
-    print(" Shapely polygons:", polygons)
+    # print(" Shapely polygons:", polygons)
 
     # get the proper detector
     det = get_engine(engine)
@@ -384,8 +381,7 @@ def get_objects():
     tmpfilename = tmpdirname[tmpdirname.rindex("\\")+1:]
     print("creating tmp dir", tmpdirname)
     session['tmpdirname'] = tmpdirname
-    tmpdir.cleanup()  # yeah this is asinine but I need the tmpdir to survive to I will create it manually next
-    os.mkdir(tmpdirname)
+    # tmpdir.cleanup()  # yeah this is asinine but I need the tmpdir to survive to I will create it manually next
     print("created tmp dir", tmpdirname)
 
     # retrieve tiles and metadata if available
@@ -491,6 +487,15 @@ def get_objects():
     session['results'] = results
     return results
 
+def cleanup_temp_directory():
+    # Cleanup the tempdir at the end of the session or application
+    if "tmpdir_obj" in session:
+        tmpdir = session['tmpdir_obj']
+        print("Cleaning up tmp dir", tmpdir.name)
+        tmpdir.cleanup()
+        del session['tmpdir_obj']
+        del session['tmpdirname']
+
 
 def allowed_extension(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg'}
@@ -550,6 +555,7 @@ def get_objects_custom():
 
     results = json.dumps(results)
     session['results'] = results
+    cleanup_temp_directory()
     return results
 
 

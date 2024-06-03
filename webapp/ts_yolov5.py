@@ -39,12 +39,13 @@ class YOLOv5_Detector:
 
     def detect(self, tiles, events, id, crop_tiles=False, secondary=None):
         # Inference in batches
-        chunks = math.ceil(len(tiles)/self.batch_size)
+        tile_count = len(tiles)
+        chunks = math.ceil(tile_count/self.batch_size)
         results = []
         count = 0
         print(" detecting ...")
 
-        for i in range(0, len(tiles), self.batch_size):
+        for i in range(0, tile_count, self.batch_size):
             # make a batch of image urls
             tile_batch = tiles[i:i+self.batch_size]
             # print("tile batch: ",tile_batch)
@@ -105,7 +106,7 @@ class YOLOv5_Detector:
                     boxes.append(box)
                 tile['detections'] = boxes
 
-            print(f" batch of {len(img_batch)} processed")
+            print(f"tiles {count} / {tile_count} processed")
 
         print("")
         return results
