@@ -107,7 +107,8 @@ providers = {
 # other global variables
 google_api_key = ""
 bing_api_key = ""
-loop = asyncio.get_event_loop()
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
 
 # prepare uploads directory
 if not os.path.isdir("./uploads"):
@@ -946,3 +947,4 @@ if __name__ == '__main__':
         dev = 1
 
     serve(app, host='0.0.0.0', port=5000)
+    print("Web app running at http://localhost:5000/")

@@ -974,7 +974,7 @@ class Detection extends PlaceRect {
 
     this.id = Detection_detections.length;
     this.originalId = this.id;
-    console.log("Detection #" + this.id + " is " + (this.selected ? "" : "not ") + "selected");
+    // console.log("Detection #" + this.id + " is " + (this.selected ? "" : "not ") + "selected");
     Detection_detections.push(this);
   }
 

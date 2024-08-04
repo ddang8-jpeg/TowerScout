@@ -120,7 +120,7 @@ class Map:
 
 async def gather_urls(urls, dir, fname, metadata):
     # change number to limit how many simultaneous calls
-    semaphore = asyncio.Semaphore(1)
+    semaphore = asyncio.Semaphore(16)
     
     async with aiohttp.ClientSession() as session:
         print("Running with Semaphore limiter")
@@ -147,10 +147,10 @@ async def fetch(semaphore, session, url, dir, fname, i):
                     await f.write(await response.read())
                     
     except aiohttp.ClientError as e:
-        print(f"Error fetching {str(i)} {url}: {e}")
+        # print(f"Error fetching {str(i)} {url}: {e}")
         # Retrying fetch after too many request response
         if e.status == 429:
-            print(f"Received 429 error, retrying after delay...")
+            # print(f"Received 429 error, retrying after delay...")
             await asyncio.sleep(1) 
             # Retry the request
             await fetch(semaphore, session, urlorig, dir, fname, i)

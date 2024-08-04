@@ -61,7 +61,7 @@ class EN_Classifier:
     # returns filtered detections (class 0 only)
     #
     # IMPORTANT: Confidence range for running EN.
-    def classify(self, img, detections, min_conf=0.01, max_conf=0.65, batch_id=0):
+    def classify(self, img, detections, min_conf=0.25, max_conf=0.65, batch_id=0):
         count=0
         for det in detections:
             x1,y1,x2,y2,conf = det[0:5]
